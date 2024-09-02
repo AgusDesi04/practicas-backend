@@ -1,5 +1,5 @@
 import fs from "fs";
-import { emitProductUpdates } from "../app.js"
+
 
 class ProductsManager {
   static path

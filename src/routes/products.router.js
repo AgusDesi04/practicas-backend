@@ -1,7 +1,7 @@
 import { Router } from "express";
 import ProductsManager from "../dao/productsManager.js";
 import fs from "fs"
-import { emitProductUpdates } from "../app.js"
+
 
 const productsRouter = Router()
 
@@ -86,10 +86,15 @@ productsRouter.post("/", async (req, res) => {
 
   // VALIDACIONES
 
-  if (!title || !description || !code || !price || !status || !stock || !category) {
+  if (!title || !description || !code || !price || !stock || !category) {
     res.setHeader("content-type", "aplication/json")
     return res.status(400).json({ error: "complete todas las propiedades!" })
   }
+
+  if(!status){
+    status = true
+  }
+
   let products = await ProductsManager.getProducts()
   let exists = products.find(p => p.title.toLowerCase() === title.toLowerCase())
   if (exists) {
