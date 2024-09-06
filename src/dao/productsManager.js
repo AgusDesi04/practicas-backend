@@ -37,26 +37,27 @@ class ProductsManager {
 
     return newProduct;
   }
-  
 
-  static async deleteProducts(id){
+
+  static async deleteProducts(id) {
     let products = await this.getProducts()
-
-    let indexProduct = products.findIndex(p=>p.id === id)
-
-    if (indexProduct === -1){
+    console.log("productos a borrar", products)
+    let indexProduct = products.findIndex(p => p.id === Number(id))
+    console.log("id", id)
+    console.log("indexProduct:", indexProduct)
+    if (indexProduct === -1) {
       throw new Error(`No existe el id ${id}`)
     }
 
     let cantidad0 = products.length
 
-    products = products.filter(p=>p.id !==id) 
-    
-    
+    products = products.filter(p => p.id !== Number(id))
+
+
     await fs.promises.writeFile(this.path, JSON.stringify(products, null, 5));
 
     let cantidad1 = products.length
-    
+
     return cantidad0 - cantidad1
 
   }

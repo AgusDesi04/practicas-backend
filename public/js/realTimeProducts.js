@@ -1,6 +1,7 @@
 const socket = io();
 
 function renderProducts(products) {
+    // console.log("products recived:", products)
     const productList = document.getElementById("product-list")
     productList.innerHTML = '';
 

@@ -1,10 +1,11 @@
 import express from "express";
 import { engine } from "express-handlebars";
+import path from 'path';
+import { Server } from "socket.io";
+import ProductsManager from "./src/dao/productsManager.js";
 import cartsRouter from "./src/routes/carts.router.js";
 import productsRouter from "./src/routes/products.router.js";
 import viwesRouter from "./src/routes/views.router.js";
-import {Server} from "socket.io"
-import ProductsManager from "./src/dao/productsManager.js";
 
 
 const PORT = 8080
@@ -14,7 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 app.use("/api/products", productsRouter)
 app.use("/api/carts", cartsRouter)
-app.use(express.static('../public'))
+app.use(express.static(path.resolve('public')));
 app.engine("handlebars", engine())
 app.set("view engine", "handlebars")
 app.set("views", "./src/views")
@@ -30,19 +31,30 @@ const io = new Server(server)
 
 io.on('connection', (socket) => {
   console.log('Cliente conectado');
-  
-  // Enviar todos los productos al conectarse
-  socket.emit('products', ProductsManager.getProducts());
-
-  // Crear producto
-  socket.on('createProduct', (product) => {
-    ProductsManager.addProducts(product);
-    io.emit('products', ProductsManager.getProducts());
+  ProductsManager.getProducts().then(products => {
+    socket.emit('products', products);
+  }).catch(error => {
+    console.error('Error fetching products:', error);
+    socket.emit('products', []);
   });
 
-  // Eliminar producto
-  socket.on('deleteProduct', (productId) => {
-    ProductsManager.deleteProducts(productId);
-    io.emit('products', ProductsManager.getProducts());
+  socket.on('createProduct', async (product) => {
+    try {
+      await ProductsManager.addProducts(product);
+      const products = await ProductsManager.getProducts();
+      io.emit('products', products);
+    } catch (error) {
+      console.error('Error adding product:', error);
+    }
+  });
+
+  socket.on('deleteProduct', async (productId) => {
+    try {
+      await ProductsManager.deleteProducts(productId);
+      const products = await ProductsManager.getProducts();
+      io.emit('products', products);
+    } catch (error) {
+      console.error('Error deleting product:', error);
+    }
   });
 });

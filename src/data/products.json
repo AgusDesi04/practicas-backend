@@ -1,43 +1,43 @@
 [
-  {
-       "id": 1,
-       "title": "Laptop Gamer",
-       "description": "Laptop de alta gama para juegos con tarjeta gráfica dedicada y procesador Intel i7.",
-       "code": "LAP123",
-       "price": 1500,
-       "status": true,
-       "stock": 25,
-       "category": "Electronics",
-       "thumbnails": [
-            "images/laptop1.jpg",
-            "images/laptop2.jpg"
-       ]
-  },
-  {
-       "id": 2,
-       "title": "Smartphone 5G",
-       "description": "Smartphone con tecnología 5G y cámara de 108 MP.",
-       "code": "PHN456",
-       "price": 999,
-       "status": true,
-       "stock": 50,
-       "category": "Mobile Phones",
-       "thumbnails": [
-            "images/phone1.jpg",
-            "images/phone2.jpg"
-       ]
-  },
-  {
-       "id": 3,
-       "title": "Auriculares Bluetooth",
-       "description": "Auriculares inalámbricos con cancelación de ruido y larga duración de batería.",
-       "code": "EAR789",
-       "price": 199,
-       "status": true,
-       "stock": 100,
-       "category": "Accessories",
-       "thumbnails": [
-            "images/earbuds1.jpg"
-       ]
-  }
+     {
+          "id": 1,
+          "title": "Laptop Gamer",
+          "description": "Laptop de alta gama para juegos con tarjeta gráfica dedicada y procesador Intel i7.",
+          "code": "LAP123",
+          "price": 1500,
+          "status": true,
+          "stock": 25,
+          "category": "Electronics",
+          "thumbnails": [
+               "images/laptop1.jpg",
+               "images/laptop2.jpg"
+          ]
+     },
+     {
+          "id": 2,
+          "title": "Smartphone 5G",
+          "description": "Smartphone con tecnología 5G y cámara de 108 MP.",
+          "code": "PHN456",
+          "price": 999,
+          "status": true,
+          "stock": 50,
+          "category": "Mobile Phones",
+          "thumbnails": [
+               "images/phone1.jpg",
+               "images/phone2.jpg"
+          ]
+     },
+     {
+          "id": 3,
+          "title": "Auriculares Bluetooth",
+          "description": "Auriculares inalámbricos con cancelación de ruido y larga duración de batería.",
+          "code": "EAR789",
+          "price": 199,
+          "status": true,
+          "stock": 100,
+          "category": "Accessories",
+          "thumbnails": [
+               "images/earbuds1.jpg"
+          ]
+     }
 ]
