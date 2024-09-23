@@ -26,18 +26,5 @@
                "images/phone1.jpg",
                "images/phone2.jpg"
           ]
-     },
-     {
-          "id": 3,
-          "title": "Auriculares Bluetooth",
-          "description": "Auriculares inalámbricos con cancelación de ruido y larga duración de batería.",
-          "code": "EAR789",
-          "price": 199,
-          "status": true,
-          "stock": 100,
-          "category": "Accessories",
-          "thumbnails": [
-               "images/earbuds1.jpg"
-          ]
      }
 ]

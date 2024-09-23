@@ -1,4 +1,5 @@
 import fs from "fs";
+import { productsModel } from "./models/productModel.js";
 
 
 class ProductsManager {
@@ -6,8 +7,8 @@ class ProductsManager {
 
   static async getProducts() {
     try {
-      const data = await fs.promises.readFile(this.path, 'utf-8');
-      return JSON.parse(data);
+      const products = await productsModel.find()
+      return products
 
     } catch (error) {
       console.error("Error al leer el archivo:", error)
@@ -16,50 +17,23 @@ class ProductsManager {
     }
   }
 
+  static async getProductsPaginate(page){
+    return await productsModel.paginate({},{lean:true, page})
+  }
+
   static async addProducts(product = {}) {
-    let products = await this.getProducts();
 
-    let id = 1;
-    if (products.length > 0) {
-      const ids = products.map(d => parseInt(d.id, 10));
-      id = Math.max(...ids) + 1;
-    }
 
-    let newProduct = {
-      id: id,
-      ...product
-    };
-
-    products.push(newProduct);
-
-    await fs.promises.writeFile(this.path, JSON.stringify(products, null, 5));
-
+    let newProduct = productsModel.create(product);
 
     return newProduct;
   }
 
 
   static async deleteProducts(id) {
-    let products = await this.getProducts()
-    console.log("productos a borrar", products)
-    let indexProduct = products.findIndex(p => p.id === Number(id))
-    console.log("id", id)
-    console.log("indexProduct:", indexProduct)
-    if (indexProduct === -1) {
-      throw new Error(`No existe el id ${id}`)
-    }
+    const newProducts = productsModel.deleteOne({_id: id})
 
-    let cantidad0 = products.length
-
-    products = products.filter(p => p.id !== Number(id))
-
-
-    await fs.promises.writeFile(this.path, JSON.stringify(products, null, 5));
-
-    let cantidad1 = products.length
-
-    return cantidad0 - cantidad1
-
+    return newProducts
   }
 }
 

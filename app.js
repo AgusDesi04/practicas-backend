@@ -6,6 +6,7 @@ import ProductsManager from "./src/dao/productsManager.js";
 import cartsRouter from "./src/routes/carts.router.js";
 import productsRouter from "./src/routes/products.router.js";
 import viwesRouter from "./src/routes/views.router.js";
+import { connDB } from "./src/connDB.js";
 
 
 const PORT = 8080
@@ -16,7 +17,11 @@ app.use(express.urlencoded({ extended: true }))
 app.use("/api/products", productsRouter)
 app.use("/api/carts", cartsRouter)
 app.use(express.static(path.resolve('public')));
-app.engine("handlebars", engine())
+app.engine("handlebars", engine({
+   runtimeOptions: {
+  allowProtoPropertiesByDefault: true, 
+  allowProtoMethodsByDefault: true
+}}))
 app.set("view engine", "handlebars")
 app.set("views", "./src/views")
 app.use("/", viwesRouter)
@@ -58,3 +63,5 @@ io.on('connection', (socket) => {
     }
   });
 });
+
+connDB()

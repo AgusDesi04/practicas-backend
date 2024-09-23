@@ -1,16 +1,15 @@
 const socket = io();
 
 function renderProducts(products) {
-    // console.log("products recived:", products)
     const productList = document.getElementById("product-list")
     productList.innerHTML = '';
 
     products.forEach(product => {
         const li = document.createElement('li');
-        li.id = `product-${product.id}`;
+        li.id = `product-${product._id}`;
         li.innerHTML = `
         ${product.title}-$${product.price}
-        <button onclick="deleteProduct('${product.id}')">Delete Product</button>
+        <button onclick="deleteProduct('${product._id}')">Delete Product</button>
         `;
         productList.appendChild(li);
     });
@@ -34,9 +33,9 @@ document.getElementById("product-form").addEventListener("submit", (e) => {
 });
 
 document.getElementById("product-list").addEventListener("click", (e) => {
-    console.log('boton!!!')
     if (e.target.classList.contains("delete-buton")) {
         const id = e.target.getAttribute("data-id")
+        console.log('id desde el realtime==', id)
         socket.emit("deleteProduct", id)
     }
 })

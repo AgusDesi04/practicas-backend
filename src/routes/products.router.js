@@ -9,39 +9,18 @@ ProductsManager.path = "./src/data/products.json"
 
 productsRouter.get("/", async (req, res) => {
   try {
+    let {page} = req.query
 
-    let products = await ProductsManager.getProducts()
-
-    let { limit, skip } = req.query
-
-    // control del limit
-    if (limit) {
-      limit = Number(limit)
-      if (isNaN(limit)) {
-        res.setHeader('Content-Type', 'application/json');
-        return res.status(400).json({ error: `El argumento limit tiene que ser numerico` })
-      }
-    } else {
-      limit = products.length
+    if(!page || isNaN(Number(page))){
+      page=1
     }
-
-    // control del skip
-    if (skip) {
-      skip = Number(skip)
-      if (isNaN(skip)) {
-        res.setHeader('Content-Type', 'application/json');
-        return res.status(400).json({ error: `El argumento skip tiene que ser numerico` })
-      }
-    } else {
-      skip = 0
-    }
-
-    // RESULTADOS
-    let resultado = products.slice(skip, skip + limit)
+    console.log(page)
+    let products = await ProductsManager.getProductsPaginate(page)
+    console.log('productos cargados:', products)
 
     res.setHeader('Content-Type', 'application/json');
-    return res.status(200).json({ resultado });
-
+     return res.status(200).json({ products });
+  
 
   } catch (error) {
 
