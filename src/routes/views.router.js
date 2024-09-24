@@ -3,7 +3,6 @@ import ProductsManager from "../dao/productsManager.js";
 
 const viewsRouter = Router()
 
-ProductsManager.path = "./src/data/products.json"
 
 viewsRouter.get("/products", async (req, res) => {
   let products = await ProductsManager.getProducts()

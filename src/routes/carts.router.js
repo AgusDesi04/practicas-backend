@@ -1,8 +1,8 @@
 import { Router } from "express";
 import fs from "fs";
 import CartsManager from "../dao/cartsManager.js";
-import ProductsManager from "../dao/productsManager.js";
 import { productsModel } from "../dao/models/productModel.js";
+import ProductsManager from "../dao/productsManager.js";
 
 
 const cartsRouter = Router()
@@ -26,7 +26,7 @@ cartsRouter.post('/', async (req, res) => {
   }
 
   try {
-    let newCart = await CartsManager.addCarts({products})
+    let newCart = await CartsManager.addCarts({ products })
     res.setHeader("content-type", "aplication/json")
     return res.status(200).json({ newCart: `se a generado un nuevo carrito ${newCart}` })
 
@@ -50,25 +50,31 @@ cartsRouter.get('/:cid', async (req, res) => {
 
   let { cid } = req.params
 
-  let id = parseInt(cid, 10)
-
-  if (isNaN(id)) {
+  if (!cid) {
     res.setHeader("content-type", "aplication/json")
-    return res.status(400).send("El id debe ser numerico!!")
+    return res.status(500).json({ error: "debes colocar un cart id!" })
   }
 
-  let carts = await CartsManager.getCarts()
-
-  let filteredCart = carts.find(c => c.id === id)
-
-  if (!filteredCart) {
+  try {
+    let cart = await CartsManager.getCartsPopulated(cid)
     res.setHeader("content-type", "aplication/json")
-    return res.status(400).send(`El Carrito con el id: ${id} no se encuentra entre los Carritos registrados!`)
+
+    return res.status(200).json({ cart })
+
+  } catch (error) {
+    res.setHeader("content-type", "aplication/json")
+
+    return res.status(500).json(
+      {
+        error: `error inesperado en el servidor!!`,
+        detalle: `${error.message}`
+      }
+    )
   }
 
-  let products = filteredCart.products
 
-  res.status(200).json({ products })
+
+
 
 
 })
@@ -80,7 +86,7 @@ cartsRouter.post("/:cid/products/:pid", async (req, res) => {
 
   try {
 
-    let addedProduct =  await CartsManager.addProductInCart(cid, pid)
+    let addedProduct = await CartsManager.addProductInCart(cid, pid)
 
     res.setHeader("content-type", "aplication/json")
 
@@ -103,16 +109,16 @@ cartsRouter.post("/:cid/products/:pid", async (req, res) => {
 
 })
 
-cartsRouter.delete("/:cid/products/:pid", async (req, res)=>{
-  let {cid} = req.params
-  let {pid} = req.params
+cartsRouter.delete("/:cid/products/:pid", async (req, res) => {
+  let { cid } = req.params
+  let { pid } = req.params
 
   try {
     let newCart = await CartsManager.removeProductFromCart(cid, pid)
 
     res.setHeader("content-type", "aplication/json")
 
-    return res.status(200).json({newCart})
+    return res.status(200).json({ newCart })
 
 
   } catch (error) {
@@ -128,23 +134,23 @@ cartsRouter.delete("/:cid/products/:pid", async (req, res)=>{
 
 })
 
-cartsRouter.put("/:cid/products/:pid", async (req, res)=>{
-  let {cid} = req.params
-  let {pid} = req.params
-  let {quantity} = req.body
+cartsRouter.put("/:cid/products/:pid", async (req, res) => {
+  let { cid } = req.params
+  let { pid } = req.params
+  let { quantity } = req.body
 
   try {
 
-    if(isNaN(quantity) || quantity < 0){
+    if (isNaN(quantity) || quantity < 0) {
       res.setHeader("content-type", "aplication/json")
-      return res.status(500).json({error:"la cantidad debe ser un numero positivo"})
+      return res.status(500).json({ error: "la cantidad debe ser un numero positivo" })
     }
 
     let newCart = await CartsManager.updateQuantity(cid, pid, quantity)
 
     res.setHeader("content-type", "aplication/json")
 
-    return res.status(200).json({newCart})
+    return res.status(200).json({ newCart })
 
   } catch (error) {
     res.setHeader("content-type", "aplication/json")
@@ -156,4 +162,32 @@ cartsRouter.put("/:cid/products/:pid", async (req, res)=>{
       }
     )
   }
+})
+
+cartsRouter.delete("/:cid", async (req, res) => {
+  let { cid } = req.params
+
+  if (!cid) {
+    res.setHeader("content-type", "aplication/json")
+    return res.status(500).json({ error: "debes colocar un cart id!" })
+  }
+
+  try {
+    let newCart = await CartsManager.deleteAllProducts(cid)
+
+    res.setHeader("content-type", "aplication/json")
+
+    return res.status(200).json({ newCart })
+
+  } catch (error) {
+    res.setHeader("content-type", "aplication/json")
+
+    return res.status(500).json(
+      {
+        error: `error inesperado en el servidor!!`,
+        detalle: `${error.message}`
+      }
+    )
+  }
+
 })

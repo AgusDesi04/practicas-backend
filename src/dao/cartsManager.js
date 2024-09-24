@@ -1,7 +1,6 @@
-import fs from "fs";
 import { cartsModel } from "./models/cartsModel.js";
 import { productsModel } from "./models/productModel.js";
-import ProductsManager from "./productsManager.js";
+
 
 
 class CartsManager {
@@ -23,27 +22,6 @@ class CartsManager {
     let newCart = cartsModel.create(cart)
     return newCart
 
-    // let carts = await this.getCarts();
-    // console.log(carts)
-
-    // let id = 1;
-    // if (carts.length > 0) {
-    //   const ids = carts.map(d => parseInt(d.id, 10));
-    //   id = Math.max(...ids) + 1;
-    // }
-
-    // let newCart = {
-    //   id: id,
-    //   products: []
-    // };
-
-    // console.log(newCart)
-
-    // carts.push(newCart);
-
-    // await fs.promises.writeFile(this.path, JSON.stringify(carts, null, 5));
-
-    // return newCart;
   }
 
   static async addProductInCart(cid, pid) {
@@ -116,6 +94,21 @@ class CartsManager {
 
 
 
+  }
+
+  static async deleteAllProducts(cid){
+    let cart = await cartsModel.findById(cid)
+
+    cart.products = []
+
+    cart.save()
+
+    return cart
+  }
+
+  static async getCartsPopulated(cid){
+    let populatedCart = await cartsModel.findById(cid).populate("products.product")
+    return populatedCart
   }
 
 }

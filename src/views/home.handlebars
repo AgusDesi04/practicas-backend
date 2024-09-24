@@ -1,9 +1,13 @@
 <h1>PRODUCTOS AGREGADOS:</h1>
-<ul>
+<ul id="product-list">
   {{#each products}}
   <li>
-    {{title}}
-    {{stock}}
+    <h2>{{title}}</h2>
+    <h3>{{stock}}</h3>
+    <button class="addToCart-button" data-id="{{this._id}}">Add to Cart</button>
   </li>
+
   {{/each}}
 </ul>
+
+<script src="/js/homeView.js"></script>

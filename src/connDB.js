@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import ProductsManager from "./dao/productsManager.js";
+
 
 export const connDB = async ()=>{
   try {
