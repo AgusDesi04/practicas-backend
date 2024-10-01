@@ -1,6 +1,6 @@
 import { Router } from "express";
+import fs from "fs";
 import ProductsManager from "../dao/productsManager.js";
-import fs from "fs"
 
 
 const productsRouter = Router()
@@ -8,20 +8,37 @@ const productsRouter = Router()
 ProductsManager.path = "./src/data/products.json"
 
 productsRouter.get("/", async (req, res) => {
-  try {
-    let {page} = req.query
 
-    if(!page || isNaN(Number(page))){
-      page=1
-    }
-    console.log(page)
-    let products = await ProductsManager.getProductsPaginate(page)
-    console.log('productos cargados:', products)
+  let { page = 1, limit = 10, sort = null, filter = null } = req.query
+
+  if (isNaN(Number(page)) || Number(page) < 1) {
+    page = 1;
+  }
+
+  if (isNaN(Number(limit)) || Number(limit) < 1) {
+    limit = 10;
+  }
+
+  try {
+
+    const productsData = await ProductsManager.getProductsPaginate({
+      page,
+      limit,
+      sort,
+      filter
+    });
+
+    const { docs: products, totalPages, hasPrevPage, hasNextPage, prevPage, nextPage } = productsData;
 
     res.setHeader('Content-Type', 'application/json');
-     return res.status(200).json({ products });
-  
-
+    return res.status(200).json({
+      products,
+      totalPages,
+      hasPrevPage,
+      hasNextPage,
+      prevPage,
+      nextPage,
+    });
   } catch (error) {
 
     console.log(error);
@@ -39,13 +56,13 @@ productsRouter.get("/:pid", async (req, res) => {
   let { pid } = req.params
 
   id = parseInt(pid, 10);
-  
+
   if (isNaN(id)) {
     res.setHeader("content-type", "aplication/json")
     return res.status(400).send("El id debe ser numerico!!")
   }
 
- 
+
 
   let products = await ProductsManager.getProducts()
 
@@ -65,12 +82,17 @@ productsRouter.post("/", async (req, res) => {
 
   // VALIDACIONES
 
+  const existingProduct = await ProductsManager.getProductByCode(code);
+  if (existingProduct) {
+    return res.status(400).json({ error: 'El código de producto ya existe.' });
+  }
+
   if (!title || !description || !code || !price || !stock || !category) {
     res.setHeader("content-type", "aplication/json")
     return res.status(400).json({ error: "complete todas las propiedades!" })
   }
 
-  if(!status){
+  if (!status) {
     status = true
   }
 
@@ -86,7 +108,6 @@ productsRouter.post("/", async (req, res) => {
   try {
     let newProduct = await ProductsManager.addProducts({ title, description, code, price, status, stock, category })
     res.setHeader("content-type", "aplication/json")
-    emitProductUpdates('updateProducts', products)
     return res.status(200).json({ newProduct })
 
   } catch (error) {
@@ -154,11 +175,8 @@ productsRouter.delete("/:id", async (req, res) => {
 
   try {
     let resultado = await ProductsManager.deleteProducts(id)
-    let products = await ProductsManager.getProducts()
-
     if (resultado > 0) {
       res.setHeader("content-type", "aplication/json")
-      emitProductUpdates('updateProducts', products)
       return res.status(200).json({ payload: "producto eliminado" })
     } else {
       res.setHeader("content-type", "aplication/json")

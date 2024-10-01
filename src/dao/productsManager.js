@@ -17,12 +17,49 @@ class ProductsManager {
     }
   }
 
-  static async getProductsPaginate(page){
-    return await productsModel.paginate({},{lean:true, page})
+  static async getProductsPaginate({ limit = 10, page = 1, sort = null, filter = null }) {
+    try {
+
+      const query = {}
+      if (filter) {
+        Object.keys(filter).forEach(key => {
+          query[key] = filter[key]
+        })
+      }
+
+
+
+      const options = {
+        limit: parseInt(limit),
+        page: parseInt(page),
+        lean: true,
+      }
+
+      if (sort) {
+        options.sort = { [sort]: 1 }
+      }
+
+      const products = await productsModel.paginate(query, options)
+
+      return products
+
+
+    } catch (error) {
+      console.error("Error al obtener productos paginados:", error);
+      return { docs: [], totalPages: 0 };
+    }
+  }
+
+  static async getProductByCode(code) {
+    try {
+      return await productsModel.findOne({ code }); // Busca un producto por su código
+    } catch (error) {
+      console.error("Error al buscar el producto:", error);
+      return null; // Retorna null si hay un error
+    }
   }
 
   static async addProducts(product = {}) {
-
 
     let newProduct = productsModel.create(product);
 
@@ -31,7 +68,7 @@ class ProductsManager {
 
 
   static async deleteProducts(id) {
-    const newProducts = productsModel.deleteOne({_id: id})
+    const newProducts = productsModel.deleteOne({ _id: id })
 
     return newProducts
   }

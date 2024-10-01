@@ -45,6 +45,12 @@ io.on('connection', (socket) => {
 
   socket.on('createProduct', async (product) => {
     try {
+
+      const existingProduct = await ProductsManager.getProductByCode(product.code);
+      if (existingProduct) {
+        throw new Error('el codigo de producto ya existe')
+      }
+
       await ProductsManager.addProducts(product);
       const products = await ProductsManager.getProducts();
       io.emit('products', products);

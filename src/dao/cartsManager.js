@@ -111,6 +111,15 @@ class CartsManager {
     return populatedCart
   }
 
+  static async updateCart(cart) {
+    try {
+        const updatedCart = await cartsModel.findByIdAndUpdate(cart._id, { products: cart.products }, { new: true });
+        return updatedCart;
+    } catch (error) {
+        throw new Error("Error actualizando el carrito: " + error.message);
+    }
+}
+
 }
 
 
