@@ -1,5 +1,4 @@
 import { Router } from "express";
-import fs from "fs";
 import ProductsManager from "../dao/productsManager.js";
 
 
@@ -38,6 +37,10 @@ productsRouter.get("/", async (req, res) => {
       hasNextPage,
       prevPage,
       nextPage,
+      currentPage: page,
+      limit,
+      sort,
+      filter
     });
   } catch (error) {
 
@@ -96,12 +99,6 @@ productsRouter.post("/", async (req, res) => {
     status = true
   }
 
-  let products = await ProductsManager.getProducts()
-  let exists = products.find(p => p.title.toLowerCase() === title.toLowerCase())
-  if (exists) {
-    res.setHeader("content-type", "aplication/json")
-    return res.status(400).json({ error: `ya existe un producto llamado ${title}` })
-  }
 
   // CARGA DEL NUEVO PRODUCTO
 
@@ -124,40 +121,23 @@ productsRouter.post("/", async (req, res) => {
 })
 
 productsRouter.put("/:pid", async (req, res) => {
+  const { pid } = req.params;  
+  const productUpdates = req.body;  
+
+
   try {
-    const { pid } = req.params;
-    const updates = req.body;
+    const updatedProduct = await ProductsManager.updateProduct(pid, productUpdates);
 
-    if (isNaN(pid)) {
-      res.setHeader("content-type", "aplication/json")
-      return res.status(400).json({ error: "El ID debe ser numérico" });
-    }
-
-    let products = await ProductsManager.getProducts();
-
-    let productIndex = products.findIndex(p => p.id === parseInt(pid, 10));
-
-    if (productIndex === -1) {
-      res.setHeader("content-type", "aplication/json")
-      return res.status(404).json({ error: `Producto con ID ${pid} no encontrado` });
-    }
-
-    let updatedProduct = { ...products[productIndex], ...updates };
-    updatedProduct.id = products[productIndex].id;
-
-    products[productIndex] = updatedProduct;
-
-    await fs.promises.writeFile(ProductsManager.path, JSON.stringify(products, null, 5));
-
-    res.setHeader("content-type", "aplication/json")
-    res.status(200).json({ updatedProduct });
-
+    res.status(200).json({
+      message: "Producto actualizado exitosamente",
+      product: updatedProduct
+    });
   } catch (error) {
-    console.log(error);
-    res.setHeader("content-type", "aplication/json")
-    res.status(500).json({
-      error: "Error inesperado en el servidor - Intente más tarde, o contacte a su administrador",
-      detalle: error.message
+    console.error("Error al actualizar el producto:", error);
+ 
+    res.status(500).json({ 
+      message: "Error al actualizar el producto",
+      error: error.message 
     });
   }
 });
@@ -166,22 +146,17 @@ productsRouter.put("/:pid", async (req, res) => {
 productsRouter.delete("/:id", async (req, res) => {
   let { id } = req.params
 
-  id = Number(id)
-
-  if (isNaN(id)) {
-    res.setHeader('Content-Type', 'application/json');
-    return res.status(400).json({ error: `id debe ser numerico` })
-  }
-
   try {
     let resultado = await ProductsManager.deleteProducts(id)
-    if (resultado > 0) {
-      res.setHeader("content-type", "aplication/json")
-      return res.status(200).json({ payload: "producto eliminado" })
-    } else {
+    if (!resultado) {
       res.setHeader("content-type", "aplication/json")
       return res.status(500).json({ error: `error al eliminar!!` })
+    } else {
+      res.setHeader("content-type", "aplication/json")
+      return res.status(200).json({ payload: "producto eliminado" })
     }
+
+
 
   } catch (error) {
     console.log(error);

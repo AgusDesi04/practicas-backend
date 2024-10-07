@@ -1,4 +1,3 @@
-import fs from "fs";
 import { productsModel } from "./models/productModel.js";
 
 
@@ -71,6 +70,22 @@ class ProductsManager {
     const newProducts = productsModel.deleteOne({ _id: id })
 
     return newProducts
+  }
+
+  static async updateProduct(id, productUpdates) {
+    try {
+        
+      const updatedProduct = await productsModel.findByIdAndUpdate(id, productUpdates, { new: true });
+
+      if (!updatedProduct) {
+        throw new Error(`No se encontró el producto con ID: ${id}`);
+      }
+
+      return updatedProduct;
+    } catch (error) {
+      console.error(`Error al actualizar el producto con ID: ${id}`, error);
+      throw error;
+    }
   }
 }
 

@@ -10,4 +10,20 @@
   {{/each}}
 </ul>
 
+<div>
+  {{#if hasPrevPage}}
+    <a href="?page={{prevPage}}{{#if limit}}&limit={{limit}}{{else}}&limit=10{{/if}}{{#if sort}}&sort={{sort}}{{/if}}{{#if filter}}&filter={{filter}}{{/if}}">
+      Página Anterior
+    </a>
+  {{/if}}
+
+  <span>Página {{currentPage}} de {{totalPages}}</span>
+
+  {{#if hasNextPage}}
+    <a href="?page={{nextPage}}{{#if limit}}&limit={{limit}}{{else}}&limit=10{{/if}}{{#if sort}}&sort={{sort}}{{/if}}{{#if filter}}&filter={{filter}}{{/if}}">
+      Página Siguiente
+    </a>
+  {{/if}}
+</div>
+
 <script src="/js/homeView.js"></script>

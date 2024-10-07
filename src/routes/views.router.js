@@ -5,7 +5,7 @@ const viewsRouter = Router()
 
 
 viewsRouter.get("/products", async (req, res) => {
-  const { limit = 10, page = 1, sort = null, filter = null } = req.query
+  let { limit = 10, page = 1, sort = null, filter = null } = req.query
 
   console.log("filtro:", filter)
   console.log('sort:', sort)
@@ -39,7 +39,10 @@ viewsRouter.get("/products", async (req, res) => {
       hasNextPage,
       prevPage,
       nextPage,
-      currentPage: page
+      currentPage: page,
+      limit,
+      sort,
+      filter
     })
 
   } catch (error) {
